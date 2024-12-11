@@ -1,5 +1,6 @@
 const Category = require("../models/Category.model");
 const { NotFoundError } = require("../utils/error.utils");
+const generateSlug = require("../utils/slug.utils");
 
 const allCategories = async () => {
   const categories = await Category.find()
@@ -10,6 +11,9 @@ const allCategories = async () => {
 };
 
 const addCategory = async (params) => {
+  if(!params.slug){
+    params.slug = generateSlug(params.name)
+  }
   const newCategory = new Category(params);
   await newCategory.save();
   return newCategory;

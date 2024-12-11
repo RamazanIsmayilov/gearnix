@@ -1,5 +1,6 @@
 const Brand = require("../models/Brand.model");
 const { NotFoundError } = require("../utils/error.utils");
+const generateSlug = require("../utils/slug.utils");
 
 const allBrands = async () => {
   const brands = await Brand.find().sort({ order: 1 })
@@ -7,6 +8,9 @@ const allBrands = async () => {
 };
 
 const addBrand = async (params) => {
+  if(!params.slug){
+    params.slug = generateSlug(params.name)
+  }
   const newBrand = new Brand(params);
   await newBrand.save();
   return newBrand;

@@ -1,12 +1,20 @@
 const { ValidationError } = require("../utils/error.utils");
 
-const validationMiddleware = (schema) => {
+const validationMiddleware = (schema, type = "body") => {
   return (req, res, next) => {
-    const { error } = schema.validate(req.body);
-    if (error) return next(new ValidationError(error?.details?.[0].message));
+    const payload = type === "body" ? req.body : req.query;
+    const validation = schema.validate(payload);
+    if (validation.error)
+      return next(new ValidationError(error?.details?.[0].message));
 
-    next()
+    if (type === "body") {
+      req.body = validation.value;
+    } else {
+      req.query = validation.value;
+    }
+
+    next();
   };
 };
 
-module.exports = validationMiddleware
+module.exports = validationMiddleware;
